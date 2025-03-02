@@ -27,8 +27,16 @@ const CourseCardSearch = ({
       </div>
       <div className="course-card-search__content">
         <div>
-          <h2 className="course-card-search__title">{course.title}</h2>
-          <p className="course-card-search__description">
+          <h2
+            className="course-card-search__title"
+            style={{ color: "#D1D5DB" }}
+          >
+            {course.title}
+          </h2>
+          <p
+            className="course-card-search__description"
+            style={{ color: "#D1D5DB" }}
+          >
             {course.description}
           </p>
         </div>
