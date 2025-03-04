@@ -3,7 +3,7 @@ import React from "react";
 
 const Loading = () => {
   return (
-    <div className="loading">
+    <div className="loading" style={{ backgroundColor: "#25262F" }}>
       <Loader2 className="loading__spinner" />
       <span className="loading__text">Loading...</span>
     </div>
