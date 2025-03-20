@@ -10,17 +10,32 @@ const isTeacherRoute = createRouteMatcher(["/teacher/(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
-  if (!userId) return new NextResponse("Unauthorized", { status: 401 });
 
-  const user = await (await clerkClient()).users.getUser(userId);
-  const userRole =
-    (user?.publicMetadata?.userType as "student" | "teacher") || "student";
+  // If no user is logged in, continue with the request
+  if (!userId) {
+    return NextResponse.next();
+  }
 
-  if (isStudentRoute(req) && userRole === "teacher")
-    return NextResponse.redirect(new URL("/teacher/courses", req.url));
+  try {
+    const user = await (await clerkClient()).users.getUser(userId);
+    const userRole =
+      (user?.publicMetadata?.userType as "student" | "teacher") || "student";
 
-  if (isTeacherRoute(req) && userRole === "student")
-    return NextResponse.redirect(new URL("/user/courses", req.url));
+    if (isStudentRoute(req) && userRole !== "student") {
+      return NextResponse.redirect(new URL("/teacher/courses", req.url));
+    }
+
+    if (isTeacherRoute(req) && userRole !== "teacher") {
+      return NextResponse.redirect(new URL("/user/courses", req.url));
+    }
+
+    // Default case - continue with the request
+    return NextResponse.next();
+  } catch (error) {
+    console.error("Middleware error:", error);
+    // In case of error, still allow the request to continue
+    return NextResponse.next();
+  }
 });
 
 export const config = {
